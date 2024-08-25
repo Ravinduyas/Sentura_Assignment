@@ -1,61 +1,41 @@
 package lk.ijse.Sentura_Assignment;
 
-import okhttp3.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import sun.rmi.server.UnicastRef;
+import lk.ijse.Sentura_Assignment.UserService;
+import lk.ijse.Sentura_Assignment.UserController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-    public String createUser(String uid, String name, String email) throws IOException {
-        String url = "https://c19921ec78d74a588a8a54bd5ca6a550.weavy.io" + "/api/users";
 
-        // json body
-        String jsonBody = "{"
-                + "\"uid\":\"" + uid + "\","
-                + "\"name\":\"" + name + "\","
-                + "\"email\":\"" + email + "\""
-                + "}";
+    @Autowired
+    private UserService userService;
 
-        // request
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + "https://c19921ec78d74a588a8a54bd5ca6a550.weavy.io")
-                .post(RequestBody.create(jsonBody, MediaType.get("application/json")))
-                .build();
-
-
-
-        //executoin
-        OkHttpClient client = null;
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return response.body().string();
-            } else {
-                throw new IOException("Failed to create user: " + response.message());
-            }
-        }
-
+    @PostMapping
+    public String createUser(@RequestParam String uid, @RequestParam String name, @RequestParam(required = false) String email) throws IOException {
+        return userService.createUser(uid, name, email);
     }
-    // user details (Get)
-    public String getUserDetails(String userId, UnicastRef client) throws IOException {
-        String url = "https://c19921ec78d74a588a8a54bd5ca6a550.weavy.io" + "/api/users/" + userId;
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + "wys_rFR6AgDQfqrvOWjS04qNiJgkgDEbMZ4JhS1w")
-                .get()
-                .build();
+    @GetMapping
+    public String listUsers(@RequestParam(defaultValue = "25") int take) throws IOException {
+        return userService.listUsers(take);
+    }
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return response.body().string();
-            } else {
-                throw new IOException("Failed to get user details: " + response.message());
-            }
-        }
+    @GetMapping("/{userId}")
+    public String getUserDetails(@PathVariable String userId) throws IOException {
+        return userService.getUserDetails(userId);
+    }
+
+    @PatchMapping("/{userId}")
+    public String updateUser(@PathVariable String userId, @RequestParam String name) throws IOException {
+        return userService.updateUser(userId, name);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable String userId) throws IOException {
+        userService.deleteUser(userId);
     }
 }
