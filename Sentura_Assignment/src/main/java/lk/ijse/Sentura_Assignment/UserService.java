@@ -8,7 +8,7 @@ import java.io.IOException;
 
 
 @Service
-public class UserService {
+public abstract class UserService {
     private static final String API_KEY = "wys_rFR6AgDQfqrvOWjS04qNiJgkgDEbMZ4JhS1w";
     private static final String WEAVY_SERVER_URL = "https://c19921ec78d74a588a8a54bd5ca6a550.weavy.io";
 
@@ -120,4 +120,6 @@ public class UserService {
             }
         }
     }
+
+    public abstract OkHttpClient getClient();
 }
