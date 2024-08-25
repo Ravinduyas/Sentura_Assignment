@@ -1,39 +1,120 @@
-package lk.ijse.Sentura_Assignment;
+package com.yourpackage.service;
 
-import okhttp3.OkHttpClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import okhttp3.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 
 @Service
 public class UserService {
-    private static final String API_KEY = "wys_rFR6AgDQfqrvOWjS04qNiJgkgDEbMZ4JhS1w";
-    private static final String WEAVY_SERVER_URL = "https://c19921ec78d74a588a8a54bd5ca6a550.weavy.io";
+    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String WEAVY_SERVER_URL = "https://YOUR-WEAVY-SERVER";
     private final OkHttpClient client;
-
-    @Autowired
-    private UserService userService;
 
     public UserService() {
         this.client = new OkHttpClient();
     }
-    @PostMapping
-    public String createUser(@RequestParam String uid, @RequestParam String name, @RequestParam(required = false) String email) throws IOException {
-        return userService.createUser(uid, name, email);
+
+    // Create a user
+    public String createUser(String uid, String name, String email) throws IOException {
+        String url = WEAVY_SERVER_URL + "/api/users";
+
+        String jsonBody = "{"
+                + "\"uid\":\"" + uid + "\","
+                + "\"name\":\"" + name + "\","
+                + "\"email\":\"" + email + "\""
+                + "}";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .post(RequestBody.create(jsonBody, MediaType.get("application/json")))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new IOException("Failed to create user: " + response.message());
+            }
+        }
     }
 
-    @GetMapping
-    public String listUsers(@RequestParam(defaultValue = "25") int take) throws IOException {
-        return userService.listUsers(take);
+    // List users
+    public String listUsers(int take) throws IOException {
+        String url = WEAVY_SERVER_URL + "/api/users?take=" + take;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new IOException("Failed to list users: " + response.message());
+            }
+        }
     }
 
-    @GetMapping("/{userId}")
-    public String getUserDetails(@PathVariable String userId) throws IOException {
-        return userService.getUserDetails(userId);
+    // Get user details
+    public String getUserDetails(String userId) throws IOException {
+        String url = WEAVY_SERVER_URL + "/api/users/" + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new IOException("Failed to get user details: " + response.message());
+            }
+        }
+    }
+
+    // Update a user
+    public String updateUser(String userId, String name) throws IOException {
+        String url = WEAVY_SERVER_URL + "/api/users/" + userId;
+
+        String jsonBody = "{"
+                + "\"name\":\"" + name + "\""
+                + "}";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .patch(RequestBody.create(jsonBody, MediaType.get("application/json")))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new IOException("Failed to update user: " + response.message());
+            }
+        }
+    }
+
+    // Delete a user
+    public void deleteUser(String userId) throws IOException {
+        String url = WEAVY_SERVER_URL + "/api/users/" + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .delete()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Failed to delete user: " + response.message());
+            }
+        }
     }
 }
