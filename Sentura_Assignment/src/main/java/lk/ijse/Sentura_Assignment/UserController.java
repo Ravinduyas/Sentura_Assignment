@@ -1,7 +1,5 @@
 package lk.ijse.Sentura_Assignment;
 
-import lk.ijse.Sentura_Assignment.UserService;
-import lk.ijse.Sentura_Assignment.UserController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
