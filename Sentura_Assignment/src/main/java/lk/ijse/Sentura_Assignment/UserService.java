@@ -1,4 +1,4 @@
-package com.yourpackage.service;
+package lk.ijse.Sentura_Assignment;
 
 import okhttp3.*;
 import org.springframework.stereotype.Service;
